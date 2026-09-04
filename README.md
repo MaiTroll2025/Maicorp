@@ -160,3 +160,7 @@ The frontend subscribes to `user-access-revocation` channel and force-logs out t
 ## Migration safety
 
 Never destructive — uses `create table if not exists` and `drop policy if exists` so re-running is safe. Add columns and policies additively.
+
+## Infrastructure billing
+
+See [supabase/migrations/026_infrastructure_coverage.sql](./supabase/migrations/026_infrastructure_coverage.sql) and [supabase/migrations/027_infrastructure_coverage_rpcs.sql](./supabase/migrations/027_infrastructure_coverage_rpcs.sql) for the coverage, monthly renewal, and immediate suspension system. The combined one-shot migration lives at [supabase/combined-infra-migration.sql](./supabase/combined-infra-migration.sql).
