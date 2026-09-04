@@ -1,0 +1,35 @@
+name: Publish MAIUPDATE
+
+# On every git push, fetch this repo's MAIUPDATE.json and publish
+# the updates to the MAI Corp Updates Hub so the public page refreshes.
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'MAIUPDATE.json'
+      - '.github/workflows/publish-maiupdate.yml'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read MAIUPDATE.json
+        id: maiupdate
+        run: |
+          PLATFORM=$(jq -r '.slug' MAIUPDATE.json 2>/dev/null || echo "")
+          echo "platform=$PLATFORM" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger MAI Corp sync webhook
+        env:
+          FUNCTION_URL: ${{ secrets.MAI_CORP_SYNC_URL }}
+          WEBHOOK_SECRET: ${{ secrets.MAIUPDATE_WEBHOOK_SECRET }}
+        run: |
+          if [ -z "$FUNCTION_URL" ]; then
+            echo "::error::Set MAI_CORP_SYNC_URL and MAIUPDATE_WEBHOOK_SECRET repo secrets"
+            exit 1
+          fi
+          PAYLOAD="{\"platform_slug\": \"${{ steps.maiupdate.outputs.platform }}\"}"
+          curl -X POST "$FUNCTION_URL" \
+            -H "x-webhook-secret: $WEBHOOK_SECRET" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD"

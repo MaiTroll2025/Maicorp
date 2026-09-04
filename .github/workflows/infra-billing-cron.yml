@@ -1,0 +1,17 @@
+name: infra-billing-cron
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger infra billing cron
+        run: |
+          curl -fsS -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Cron-Secret: 199519951903190310031003" \
+            -d '{}' \
+            "https://jkavykrzaygeiwjjmlma.supabase.co/functions/v1/run-infrastructure-billing-cron"

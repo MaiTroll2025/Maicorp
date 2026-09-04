@@ -1,0 +1,22 @@
+{
+  "app": "MAI Corp",
+  "slug": "maicorp",
+  "status": "LIVE",
+  "version": "1.0.0",
+  "last_updated": "2026-09-03",
+  "links": {
+    "website": "https://maicorp.online",
+    "ios": null,
+    "android": null
+  },
+  "updates": [
+    {
+      "version": "1.0.0",
+      "date": "2026-09-03",
+      "title": "Updates Hub Launched",
+      "description": "The central PRODUCT UPDATES page is now live. Every MAI Corp project publishes a MAIUPDATE.json file on git push, and this page displays the latest changes across the entire ecosystem.",
+      "type": "announcement",
+      "featured": true
+    }
+  ]
+}

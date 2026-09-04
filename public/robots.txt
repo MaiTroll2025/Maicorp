@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /ceo
+Disallow: /employee
+Disallow: /hr
+Disallow: /cart
+Disallow: /checkout
+Disallow: /login
+Disallow: /signup
+Disallow: /search
+Sitemap: https://maicorp.online/sitemap.xml
