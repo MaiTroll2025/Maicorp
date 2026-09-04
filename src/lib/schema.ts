@@ -19,6 +19,12 @@ export interface RpcExpectation {
   returns?: string
 }
 
+export interface EdgeFunctionExpectation {
+  name: string
+  slug: string
+  description?: string
+}
+
 export const EXPECTED_TABLES: SchemaExpectation[] = [
   { table: 'users', columns: ['id', 'email', 'full_name', 'role', 'employment_status', 'account_status', 'access_version', 'employee_id'] },
   { table: 'employees', columns: ['id', 'user_id', 'employee_number', 'first_name', 'last_name', 'preferred_name', 'email', 'phone', 'department_id', 'position_id', 'manager_id', 'employment_type', 'start_date', 'employment_status', 'account_status', 'created_at'] },
@@ -95,12 +101,6 @@ export const EXPECTED_RPCS: RpcExpectation[] = [
   { name: 'calculate_payroll' },
   { name: 'approve_payroll' },
   { name: 'close_payroll' },
-  { name: 'create_paypal_order' },
-  { name: 'capture_paypal_order' },
-  { name: 'paypal_webhook' },
-  { name: 'run_diagnostics' },
-  { name: 'app_updates_count' },
-  { name: 'upsert_app_update' },
   { name: 'mark_order_messages_read' },
   { name: 'get_ceo_project_summaries' },
   { name: 'initialize_infrastructure_coverage' },
@@ -116,6 +116,21 @@ export const EXPECTED_RPCS: RpcExpectation[] = [
   { name: 'next_infrastructure_invoice_number' },
   { name: 'mai_coverage_monthly_fee_cents' },
   { name: 'mark_intake_submitted' },
+]
+
+// Edge functions live outside Postgres and must be probed via HTTP, not
+// supabase.rpc. They are listed here so the CEO system health page can
+// verify deployment + reachability separately.
+export const EXPECTED_EDGE_FUNCTIONS: EdgeFunctionExpectation[] = [
+  { name: 'paypal-create',            slug: 'paypal-create',            description: 'Creates a PayPal order for an MAI Corp order' },
+  { name: 'paypal-capture',           slug: 'paypal-capture',           description: 'Captures a previously-created PayPal order' },
+  { name: 'paypal-webhook',           slug: 'paypal-webhook',           description: 'Receives PayPal webhooks (capture, refund, reversal)' },
+  { name: 'send-infrastructure-email',slug: 'send-infrastructure-email',description: 'Sends Resend transactional emails for infrastructure billing events' },
+  { name: 'send-intake-email',        slug: 'send-intake-email',        description: 'Sends project intake form reminder + confirmation' },
+  { name: 'infra-invoice-paypal-create', slug: 'infra-invoice-paypal-create', description: 'Creates a PayPal order for an infrastructure invoice' },
+  { name: 'infra-invoice-paypal-capture',slug: 'infra-invoice-paypal-capture', description: 'Captures a PayPal order for an infrastructure invoice' },
+  { name: 'run-infrastructure-billing-cron', slug: 'run-infrastructure-billing-cron', description: 'Daily cron: overdue + suspend + renew + email' },
+  { name: 'sync-maiupdate',           slug: 'sync-maiupdate',           description: 'Syncs MAIUPDATE.json updates into app_updates' },
 ]
 
 export const CURRENT_SCHEMA_VERSION = '2026.09.04.002'

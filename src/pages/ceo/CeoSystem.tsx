@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Container, H1, Card, Chip, Eyebrow, StatusDot } from '@/components/ui'
-import { CURRENT_SCHEMA_VERSION, EXPECTED_TABLES, EXPECTED_RPCS } from '@/lib/schema'
+import { CURRENT_SCHEMA_VERSION, EXPECTED_TABLES, EXPECTED_RPCS, EXPECTED_EDGE_FUNCTIONS } from '@/lib/schema'
 import { supabase } from '@/lib/supabase'
 
 interface Check { name: string; status: 'OK' | 'WARN' | 'FAIL' | 'UNKNOWN'; detail: string }
@@ -47,13 +47,30 @@ export function CeoSystem() {
     for (const r of EXPECTED_RPCS) {
       const { error } = await supabase.rpc(r.name as any, (rpcArgs[r.name] ?? {}) as any)
       const msg = error?.message ?? 'available'
-      // "Could not find the function … without parameters" = NOT FOUND
       const isMissing = msg.toLowerCase().includes('could not find the function')
       push('Functions', {
         name: `RPC ${r.name}`,
         status: isMissing ? 'FAIL' : 'OK',
         detail: isMissing ? 'function not registered' : (error ? msg.slice(0, 80) : 'reachable'),
       })
+    }
+
+    // Edge functions are HTTP endpoints under /functions/v1/<slug>. We
+    // probe with an OPTIONS request so we don't trigger any side effects.
+    const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string) || ''
+    for (const f of EXPECTED_EDGE_FUNCTIONS) {
+      const url = `${supabaseUrl}/functions/v1/${f.slug}`
+      try {
+        const res = await fetch(url, { method: 'OPTIONS' })
+        const ok = res.status < 500
+        push('Functions', {
+          name: `Edge ${f.name}`,
+          status: ok ? 'OK' : 'FAIL',
+          detail: `${f.description ?? ''} → HTTP ${res.status}`,
+        })
+      } catch (e: any) {
+        push('Functions', { name: `Edge ${f.name}`, status: 'FAIL', detail: String(e?.message ?? e) })
+      }
     }
 
     push('Auth', { name: 'Auth session', status: 'OK', detail: 'verified client-side' })
