@@ -77,7 +77,7 @@ export function HomePage() {
           <div className="absolute -bottom-40 left-[-10%] w-[700px] h-[700px] rounded-full blur-3xl opacity-25" style={{ background: 'radial-gradient(circle, #00BFFF, transparent 60%)' }} />
         </div>
         <Container className="relative pt-20 pb-16 lg:pt-32 lg:pb-24">
-          <Eyebrow>MAI CORP · Headquarters</Eyebrow>
+          <Eyebrow>MAI CORP · Virtual Headquarters</Eyebrow>
           <p className="mt-5 text-lg font-medium text-hi/90">Welcome to MAI Corp. This is the MAI Way.</p>
           <H1 className="mt-4 max-w-5xl">
             <div className="chrome-text">{(hero.value?.lines ?? ['BUILDING','TECHNOLOGY','WITH PURPOSE.']).join(' ')}</div>
